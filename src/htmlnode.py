@@ -1,4 +1,5 @@
 from functools import reduce
+from sys import exit
 
 
 class HTMLNode:
@@ -41,6 +42,7 @@ class LeafNode(HTMLNode):
         html_repr = opening_tag + self.value + closing_tag
         return html_repr
 
+
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
         super().__init__(tag, None, children, props)
@@ -53,8 +55,8 @@ class ParentNode(HTMLNode):
         
         opening_tag = f"<{self.tag}{self.props_to_html()}>"
         closing_tag = f"</{self.tag}>"
-        children_html = "".join(map(lambda child: child.to_html(), self.children))
 
+        children_html = "".join(map(lambda child: child.to_html(), self.children))
         html_repr = opening_tag + children_html + closing_tag
         return html_repr
 
