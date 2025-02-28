@@ -1,24 +1,29 @@
 from textnode import TextNode, TextType, generate_pages_recursive
 import os
 import shutil
+import sys
 
 
-content_path = "/home/noeri/workspace/github.com/NoeRicklin/static_sites/content"
-static_path = "/home/noeri/workspace/github.com/NoeRicklin/static_sites/static"
-template_path = "/home/noeri/workspace/github.com/NoeRicklin/static_sites/template.html"
-public_path = "/home/noeri/workspace/github.com/NoeRicklin/static_sites/public"
+content_path = "content"
+static_path = "static"
+template_path = "template.html"
+docs_path = "docs"
 
 
 def main():
-    src_to_dst(static_path, public_path)
-    generate_pages_recursive(content_path, template_path, public_path)
+    if len(sys.argv) == 2:
+        basepath = sys.argv[1]
+    else:
+        basepath = "./"
+    src_to_dst(static_path, docs_path, basepath)
+    generate_pages_recursive(content_path, template_path, docs_path, basepath)
 
 
-def src_to_dst(src_path, dst_path):
-    if not os.path.exists(src_path):
+def src_to_dst(src_path, dst_path, basepath):
+    if not os.path.exists(basepath + "/" + src_path):
         raise Exception("Invalid path")
-    shutil.rmtree(dst_path)
-    shutil.copytree(src_path, dst_path)
+    shutil.rmtree(basepath + "/" + dst_path)
+    shutil.copytree(basepath + "/" + src_path, basepath + "/" + dst_path)
 
 
 main()

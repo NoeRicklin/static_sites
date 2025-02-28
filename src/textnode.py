@@ -195,7 +195,7 @@ def extract_title(markdown):
     return title[2:]
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     if not (os.path.exists(from_path) and os.path.exists(template_path)):
         raise Exception("invalid path")
     markdown_file = open(from_path)
@@ -207,17 +207,19 @@ def generate_page(from_path, template_path, dest_path):
         html_str = markdown_to_html_node(markdown).to_html()
         template = template.replace("{{ Title }}", title)
         template = template.replace("{{ Content }}", html_str)
+        template = template.replace('href="/', f'href="{basepath}')
+        template = template.replace('src="/', f'src="{basepath}')
         dest.write(template)
     markdown_file.close()
     template_file.close()
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
-    for path in os.listdir(dir_path_content):
-        if os.path.isfile(dir_path_content + "/" + path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
+    for path in os.listdir(basepath + "/" + dir_path_content):
+        if os.path.isfile(basepath + "/" + dir_path_content + "/" + path):
             new_file_name = path.rstrip(".md") + ".html"
-            generate_page(dir_path_content + "/" + path, template_path, dest_dir_path + "/" + new_file_name)
+            generate_page(basepath + "/" + dir_path_content + "/" + path, basepath + "/" + template_path, basepath + "/" + dest_dir_path + "/" + new_file_name, basepath)
         else:
-            os.mkdir(dest_dir_path + "/" + path)
-            generate_pages_recursive(dir_path_content + "/" + path, template_path, dest_dir_path + "/" + path)
+            os.mkdir(basepath + "/" + dest_dir_path + "/" + path)
+            generate_pages_recursive(basepath + "/" + dir_path_content + "/" + path, basepath + "/" + template_path, basepath + "/" + dest_dir_path + "/" + path, basepath)
 
